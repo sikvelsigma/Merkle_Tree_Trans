@@ -8,6 +8,9 @@ contract TestHash {
     uint256 public amount = 0x1eca955e9b65e00000;
 
     function p_hash() public view returns (bytes32) {
-        return keccak256(abi.encodePacked(index, account, amount));
+        bytes32 h1 = keccak256(abi.encodePacked(index, account, amount));
+        bytes32 h2 = keccak256(abi.encodePacked(index+1, account, amount));
+        bytes32 s = keccak256(abi.encodePacked(h1, h2));
+        return s;
     }
 }
