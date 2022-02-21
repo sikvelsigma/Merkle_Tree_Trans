@@ -1,6 +1,7 @@
 import json
 from collections import defaultdict
 from web3 import Web3
+
 # from eth_abi.packed import encode_abi_packed
 
 
@@ -89,6 +90,7 @@ class MerkleTree:
                         node2 = nodes[i]
                     elif single_nodes_mode == 2:
                         parents.insert(0, node1)
+                        nodes.pop(i)
                         continue
 
                 if node2 is not None:
@@ -111,6 +113,7 @@ class MerkleTree:
                 node1.parent = parents[-1]
                 if node2:
                     node2.parent = parents[-1]
+
             if parents:
                 self.nodes_by_layer.append(parents)
             nodes = parents
@@ -152,12 +155,14 @@ class MerkleTree:
             else:
                 result_hash = self.keccak(hash + result_hash)
         return result_hash == root
-        
+
     def print_ids_by_layer(self):
         for i, elem in enumerate(self.nodes_by_layer):
             st = ""
             for n in elem:
-                st = st + f"  {n.id}"
+                c1 = n.left.id if n.left else ""
+                c2 = n.right.id if n.right else ""
+                st = st + f"   {n.id}({c1},{c2})"
             print(f"layer {i}: {st}")
 
     @property
@@ -204,7 +209,9 @@ for index, item in converted_dict.items():
 # for i in data_to_hash:
 #     print(f'{i[0]}  {i[1]}  {Web3.toHex(i[2])}')
 
-hash_tree = MerkleTree(data_to_hash, ["uint256", "address", "uint256"], single_nodes_mode=2)
+hash_tree = MerkleTree(
+    data_to_hash, ["uint256", "address", "uint256"], single_nodes_mode=2
+)
 print(hash_tree)
 
 target_number = 14
@@ -212,14 +219,18 @@ check_number = 14
 
 target = hash_tree.initial_nodes[data_to_hash[target_number]]
 # print(target)
-print(f'root: {hash_tree.merkle_root.hex()}')
+print(f"root: {hash_tree.merkle_root.hex()}")
 proof = hash_tree.get_proof_hashes(target)
 
 hash_tree.print_ids_by_layer()
 
-target_hash = hash_tree.initial_nodes[data_to_hash[target_number]].value
+target_hash = hash_tree.initial_nodes[data_to_hash[check_number]].value
 is_in_a_tree = hash_tree.verify(proof, hash_tree.merkle_root, target_hash)
-print(f'verify item #{check_number} with proof from item #{target_number}: {is_in_a_tree}')
+print(
+    f"verify item #{check_number} with proof from item #{target_number}: {is_in_a_tree}"
+)
 
-contract_root = Web3.toBytes(0xac1910a665aeb8bd47d75573dfcfe10582a33738b3fe8b12eeba6a884aa86886)
-print(f'check against contract root: {hash_tree.merkle_root == contract_root}')
+contract_root = Web3.toBytes(
+    0xAC1910A665AEB8BD47D75573DFCFE10582A33738B3FE8B12EEBA6A884AA86886
+)
+print(f"check against contract root: {hash_tree.merkle_root == contract_root}")
