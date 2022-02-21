@@ -205,7 +205,7 @@ proof = hash_tree.get_proof_hashes(target)
 
 target_hash = hash_tree.initial_nodes[data_to_hash[14]].value
 is_in_a_tree = hash_tree.verify(proof, hash_tree.merkle_root, target_hash)
-# print(is_in_a_tree)
+print(is_in_a_tree)
 
-# contract_root = Web3.toBytes(0xac1910a665aeb8bd47d75573dfcfe10582a33738b3fe8b12eeba6a884aa86886)
-# print(hash_tree.merkle_root == contract_root)
+contract_root = Web3.toBytes(0xac1910a665aeb8bd47d75573dfcfe10582a33738b3fe8b12eeba6a884aa86886)
+print(hash_tree.merkle_root == contract_root)
