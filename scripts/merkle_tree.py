@@ -1,6 +1,7 @@
 import json
 from collections import defaultdict
 from web3 import Web3
+import os
 
 # from eth_abi.packed import encode_abi_packed
 
@@ -141,10 +142,6 @@ class MerkleTree:
 
     def get_proof_hashes(self, node):
         proof = self.get_proof(node)
-        # res = []
-        # for node in proof:
-        #     res.append(node.value)
-        # return res
         return [n.value for n in proof]
 
     def verify(self, proof, root, leaf):
@@ -186,51 +183,52 @@ class MerkleTree:
         return res
 
 
-with open("rewardDistribution2.json") as json_file:
-    data = json.load(json_file)
-    # Print the type of data variable
-converted_dict = defaultdict(dict)
-for key, item in data.items():
-    for item2 in item:
-        index = item2["index"]
-        if key == "distribution":
-            converted_dict[index]["address"] = item2["address"]
-            converted_dict[index]["amount"] = int(item2["amount"]["hex"], 0)
-        elif key == "privateKeys":
-            converted_dict[index]["privateKey"] = item2["privateKey"]
+if __name__ == "__main__":
+    with open(os.path.join("data", "rewardDistribution2.json")) as json_file:
+        data = json.load(json_file)
+        # Print the type of data variable
+    converted_dict = defaultdict(dict)
+    for key, item in data.items():
+        for item2 in item:
+            index = item2["index"]
+            if key == "distribution":
+                converted_dict[index]["address"] = item2["address"]
+                converted_dict[index]["amount"] = int(item2["amount"]["hex"], 0)
+            elif key == "privateKeys":
+                converted_dict[index]["privateKey"] = item2["privateKey"]
 
-data_to_hash = [None] * len(converted_dict)
+    data_to_hash = [None] * len(converted_dict)
 
-for index, item in converted_dict.items():
-    account = item["address"]
-    amount = item["amount"]
-    data_to_hash[index] = (index, account, amount)
+    for index, item in converted_dict.items():
+        account = item["address"]
+        amount = item["amount"]
+        data_to_hash[index] = (index, account, amount)
 
-# for i in data_to_hash:
-#     print(f'{i[0]}  {i[1]}  {Web3.toHex(i[2])}')
+    # for i in data_to_hash:
+    #     print(f'{i[0]}  {i[1]}  {Web3.toHex(i[2])}')
 
-hash_tree = MerkleTree(
-    data_to_hash, ["uint256", "address", "uint256"], single_nodes_mode=2
-)
-print(hash_tree)
+    hash_tree = MerkleTree(
+        data_to_hash, ["uint256", "address", "uint256"], single_nodes_mode=2
+    )
+    print(hash_tree)
 
-target_number = 14
-check_number = 14
+    target_number = 14
+    check_number = 14
 
-target = hash_tree.initial_nodes[data_to_hash[target_number]]
-# print(target)
-print(f"root: {hash_tree.merkle_root.hex()}")
-proof = hash_tree.get_proof_hashes(target)
+    target = hash_tree.initial_nodes[data_to_hash[target_number]]
+    # print(target)
+    print(f"root: {hash_tree.merkle_root.hex()}")
+    proof = hash_tree.get_proof_hashes(target)
 
-hash_tree.print_ids_by_layer()
+    hash_tree.print_ids_by_layer()
 
-target_hash = hash_tree.initial_nodes[data_to_hash[check_number]].value
-is_in_a_tree = hash_tree.verify(proof, hash_tree.merkle_root, target_hash)
-print(
-    f"verify item #{check_number} with proof from item #{target_number}: {is_in_a_tree}"
-)
+    target_hash = hash_tree.initial_nodes[data_to_hash[check_number]].value
+    is_in_a_tree = hash_tree.verify(proof, hash_tree.merkle_root, target_hash)
+    print(
+        f"verify item #{check_number} with proof from item #{target_number}: {is_in_a_tree}"
+    )
 
-contract_root = Web3.toBytes(
-    0xAC1910A665AEB8BD47D75573DFCFE10582A33738B3FE8B12EEBA6A884AA86886
-)
-print(f"check against contract root: {hash_tree.merkle_root == contract_root}")
+    contract_root = Web3.toBytes(
+        0xAC1910A665AEB8BD47D75573DFCFE10582A33738B3FE8B12EEBA6A884AA86886
+    )
+    print(f"check against contract root: {hash_tree.merkle_root == contract_root}")
