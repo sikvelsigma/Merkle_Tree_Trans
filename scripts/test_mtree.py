@@ -1,7 +1,7 @@
 import json
 from collections import defaultdict
 from web3 import Web3
-from eth_abi.packed import encode_abi_packed
+# from eth_abi.packed import encode_abi_packed
 
 
 class MerkleTree:
@@ -52,10 +52,14 @@ class MerkleTree:
     def __str__(self):
         return self.pre_order(self.__root_node)
 
-    def __init__(self, data, format, no_singe_nodes=False):
+    def __init__(self, data, format, single_nodes_mode=0):
         """
         data is a list of values to hash together
         format is a list with Solidity types
+        single_nodes_mode:
+            0: single nodes are promoted
+            1: single nodes are self-paired
+            2: single nodes are added to the 1st in the next level
         """
         # hash initial nodes and store
         hash_data = self.list_to_keccak(data, format)
@@ -78,10 +82,12 @@ class MerkleTree:
                 if i + 1 < len(nodes):
                     node2 = nodes[i + 1]
                 else:
-                    if no_singe_nodes:
-                        node2 = nodes[i]
-                    else:
+                    if single_nodes_mode == 0:
                         node2 = None
+                    elif single_nodes_mode == 1:
+                        node2 = nodes[i]
+                    elif single_nodes_mode == 2:
+                        node2 = parents.pop(0)
 
                 if node2 is not None:
                     # smallest hash is always on the left leaf
@@ -195,7 +201,7 @@ for index, item in converted_dict.items():
 # for i in data_to_hash:
 #     print(f'{i[0]}  {i[1]}  {Web3.toHex(i[2])}')
 
-hash_tree = MerkleTree(data_to_hash, ["uint256", "address", "uint256"], no_singe_nodes=False)
+hash_tree = MerkleTree(data_to_hash, ["uint256", "address", "uint256"], single_nodes_mode=2)
 print(hash_tree)
 
 target = hash_tree.initial_nodes[data_to_hash[14]]
