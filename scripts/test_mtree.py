@@ -79,6 +79,7 @@ class MerkleTree:
             parents = []
             for i in range(0, len(nodes), 2):
                 node1 = nodes[i]
+                tofront = 0
                 if i + 1 < len(nodes):
                     node2 = nodes[i + 1]
                 else:
@@ -88,6 +89,7 @@ class MerkleTree:
                         node2 = nodes[i]
                     elif single_nodes_mode == 2:
                         node2 = parents.pop(0)
+                        tofront = 1
 
                 if node2 is not None:
                     # smallest hash is always on the left leaf
@@ -104,12 +106,19 @@ class MerkleTree:
                     right = None
                     p_hash = node1.value
                 current_id += 1
-                parents.append(self.Node(p_hash, left, right, current_id))
-                node1.parent = parents[-1]
-                if node2:
-                    node2.parent = parents[-1]
-
-            self.nodes_by_layer.append(parents)
+                
+                if tofront:
+                    parents.insert(0, self.Node(p_hash, left, right, current_id))
+                    node1.parent = parents[0]
+                    if node2:
+                        node2.parent = parents[0]
+                else:
+                    parents.append(self.Node(p_hash, left, right, current_id))
+                    node1.parent = parents[-1]
+                    if node2:
+                        node2.parent = parents[-1]
+            if parents:
+                self.nodes_by_layer.append(parents)
             nodes = parents
 
         self.__root_node = nodes[0]
@@ -204,14 +213,19 @@ for index, item in converted_dict.items():
 hash_tree = MerkleTree(data_to_hash, ["uint256", "address", "uint256"], single_nodes_mode=2)
 print(hash_tree)
 
-target = hash_tree.initial_nodes[data_to_hash[14]]
+target_number = 14
+check_number = 14
+
+target = hash_tree.initial_nodes[data_to_hash[target_number]]
 # print(target)
-print(hash_tree.merkle_root.hex())
+print(f'root: {hash_tree.merkle_root.hex()}')
 proof = hash_tree.get_proof_hashes(target)
 
-target_hash = hash_tree.initial_nodes[data_to_hash[14]].value
+hash_tree.print_ids_by_layer()
+
+target_hash = hash_tree.initial_nodes[data_to_hash[target_number]].value
 is_in_a_tree = hash_tree.verify(proof, hash_tree.merkle_root, target_hash)
-print(is_in_a_tree)
+print(f'verify item #{check_number} with proof from item #{target_number}: {is_in_a_tree}')
 
 contract_root = Web3.toBytes(0xac1910a665aeb8bd47d75573dfcfe10582a33738b3fe8b12eeba6a884aa86886)
-print(hash_tree.merkle_root == contract_root)
+print(f'check against contract root: {hash_tree.merkle_root == contract_root}')
