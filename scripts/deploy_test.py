@@ -1,10 +1,24 @@
 from brownie import (
     accounts,
     config,
-    SimpleRewardDistributorFlat as Distributor,
-    TestTokenWithNameAndSymbolFlat as Token,
+    network,
+    SimpleRewardDistributor as Distributor,
+    TestTokenWithNameAndSymbol as Token,
+    TestHash
 )
 
+def get_account():
+    if network.show_active() == "development":
+        return accounts[0]
+    else:
+        return accounts.add(config["wallets"]["from_key"])
+
+def deploy_hashtest():
+    # account = accounts[0]
+    account = get_account()
+    print(account)
+    token = TestHash.deploy({"from": account})
+    print(token)
 
 def deploy_token():
     # account = accounts[0]
@@ -19,4 +33,4 @@ def deploy_distributor():
 
 
 def main():
-    deploy_token()
+    deploy_hashtest()
