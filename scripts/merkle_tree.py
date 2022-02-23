@@ -1,11 +1,7 @@
-import json
-from collections import defaultdict
 from web3 import Web3
-import os
+from scripts.misc import read_json
 
 # from eth_abi.packed import encode_abi_packed
-
-
 class MerkleTree:
     class Node:
         """
@@ -183,26 +179,8 @@ class MerkleTree:
         return res
 
 
-if __name__ == "__main__":
-    with open(os.path.join("data", "rewardDistribution2.json")) as json_file:
-        data = json.load(json_file)
-        # Print the type of data variable
-    converted_dict = defaultdict(dict)
-    for key, item in data.items():
-        for item2 in item:
-            index = item2["index"]
-            if key == "distribution":
-                converted_dict[index]["address"] = item2["address"]
-                converted_dict[index]["amount"] = int(item2["amount"]["hex"], 0)
-            elif key == "privateKeys":
-                converted_dict[index]["privateKey"] = item2["privateKey"]
-
-    data_to_hash = [None] * len(converted_dict)
-
-    for index, item in converted_dict.items():
-        account = item["address"]
-        amount = item["amount"]
-        data_to_hash[index] = (index, account, amount)
+def main():
+    data_to_hash, _ = read_json("rewardDistribution2")
 
     # for i in data_to_hash:
     #     print(f'{i[0]}  {i[1]}  {Web3.toHex(i[2])}')
@@ -232,3 +210,7 @@ if __name__ == "__main__":
         0xAC1910A665AEB8BD47D75573DFCFE10582A33738B3FE8B12EEBA6A884AA86886
     )
     print(f"check against contract root: {hash_tree.merkle_root == contract_root}")
+
+# if __name__ == "__main__":
+#     pass
+    
