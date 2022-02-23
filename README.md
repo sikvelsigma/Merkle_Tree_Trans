@@ -2,8 +2,6 @@
 
 Currently work-in-progress
 
-scripts/test_mtree.py contains Merkle tree class and basic usage (will change in the future)
-
 Using:
 > - ganache-cli (Node.js)
 > 
