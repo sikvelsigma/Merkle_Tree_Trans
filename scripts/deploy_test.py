@@ -35,7 +35,7 @@ def get_hashtest_value(token=None):
 
 def deploy_token(total_supply):
     account = get_account()
-    print(f"Token deploying token...")
+    print(f"Deploying token contract...")
     token = Token.deploy(
         total_supply, "TestToken", "TT", {"from": account}, publish_source=publish
     )
@@ -48,7 +48,7 @@ def deploy_token(total_supply):
 
 def deploy_distributor(token_address, root):
     account = get_account()
-    print(f"Token deploying distributor...")
+    print(f"Deploying distributor contract...")
     distributor = Distributor.deploy(
         token_address, root, {"from": account}, publish_source=publish
     )
@@ -62,7 +62,7 @@ def transfer_to_distributor(token, distributor, amount):
     tx = token.transfer(distributor.address, amount, {"from": account})
     tx.wait(1)
     balance = token.balanceOf(distributor.address)
-    print(f"Balance of the distributor: {balance}\n")
+    print(f"Balance of the distributor: {balance} {token.symbol()}\n")
     return tx
 
 
@@ -72,8 +72,8 @@ def claim_from_distributor(distributor, index, account, amount, proof):
     tx = distributor.claim(index, account, amount, proof, {"from": account_sender})
     tx.wait(1)
     is_claimed = distributor.isClaimed(index)
-    print(f"Claim successful: {is_claimed}\n")
 
+    print(f"Claim successful: {is_claimed}\n")
 
 def main():
 
@@ -94,3 +94,5 @@ def main():
     is_in_a_tree = merkle_tree.verify(merkle_proof, merkle_root, target_node.value)
 
     claim = claim_from_distributor(distributor, index, account, amount, merkle_proof)
+    balance = token.balanceOf(distributor.address)
+    print(f"Balance of the distributor: {balance} {token.symbol()}\n")
