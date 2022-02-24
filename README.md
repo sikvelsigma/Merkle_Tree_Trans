@@ -3,9 +3,8 @@
 Currently work-in-progress
 
 Using:
-> - ganache-cli (Node.js)
-> 
-> - brownie (Python)
+- `ganache-cli (Node.js)`
+- `brownie (Python)`
 
 Problems to solve:
 - root hash doesn't match one in the contract
