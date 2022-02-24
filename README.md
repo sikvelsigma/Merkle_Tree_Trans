@@ -21,7 +21,7 @@ I've tried several tree generation techniques that differ in an odd node handlin
  - insert a new node from the first and an odd one into the back/front of the next layer
 
  None of these methods yielded the required root hash. I can only conclude that to replicate the same Merkle root I would need the original tree so I could match it with mine and find the exact method used to handle an odd node. I've also verified that my hash function gives the same result as Solidity for the sum of 2 hashes (use `brownie test` to check). 
-
+## Deploy
  Aside from that, I've tested the deploy script on local net and Rinkbey (`deploy.py`), it works as intended. I've also tested the claim function on already deployed contracts (`claim_from_deployed.py`) and it also works.
  To deploy one needs to fill `.env` file with appropriate keys and use 
  `brownie run scripts/deploy.py --network rinkeby`
