@@ -13,4 +13,10 @@ contract TestHash {
         bytes32 s = keccak256(abi.encodePacked(h1, h2));
         return s;
     }
+    function p_hash2() public view returns (bytes32) {
+        bytes32 h1 = keccak256(abi.encode(index, account, amount));
+        bytes32 h2 = keccak256(abi.encode(index+1, account, amount));
+        bytes32 s = keccak256(abi.encodePacked(h1, h2));
+        return s;
+    }
 }
