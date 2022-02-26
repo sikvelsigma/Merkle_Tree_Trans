@@ -24,6 +24,8 @@ I've tried several tree generation techniques that differ in an odd node handlin
  Aside from that, I've tested the deploy script on local net and Rinkbey (`deploy.py`), it works as intended. I've also tested the claim function on already deployed contracts (`claim_from_deployed.py`) and it also works.
  To deploy one needs to fill `.env` file with appropriate keys and use 
  `brownie run scripts/deploy.py --network rinkeby`
- to deploy to Rinkeby and claim from the account with 0 index.
+ to deploy to Rinkeby.
 
  Use `brownie run scripts/claim_from_deployed.py --network rinkeby` with appropriate addresses from token and distributor contracts and desired account index to claim from an already deployed contracts.
+
+ Use `brownie run scripts/check_claims.py --network rinkeby` to verify all claims from the list on already deployed contracts
