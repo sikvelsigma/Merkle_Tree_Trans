@@ -207,8 +207,10 @@ def main():
     )
 
     contract_root = Web3.toBytes(
-        0xAC1910A665AEB8BD47D75573DFCFE10582A33738B3FE8B12EEBA6A884AA86886
+        0x70b2f9fa327eddf705fca65be0b43300dee9c8f1ea76d32203695c863aa4d76b
     )
+    
+    # 0xAC1910A665AEB8BD47D75573DFCFE10582A33738B3FE8B12EEBA6A884AA86886
     print(f"check against contract root: {hash_tree.merkle_root == contract_root}")
 
 # if __name__ == "__main__":

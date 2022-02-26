@@ -78,9 +78,22 @@ def claim_from_distributor(distributor, index, account, amount, proof):
     print(f"Drop claimed: {is_claimed}\n")
     return tx
 
+def check_claim(distributor, index, account, amount, proof):
+    """Checks if claim is valid"""
+
+    print(f"Checking validity of claim for {account} (index: {index})...")
+    claim = False
+    try:
+        claim = distributor.checkClaim(index, account, amount, proof)
+    except Exception as err:
+        print(f"Cheking failed!")
+        print(err)
+    print(f"Claim check result: {claim}\n")
+
+    return claim
 
 def main():
-
+    """Deploy both contracts"""
     data_to_hash, private_keys_data = read_json("rewardDistribution2")
 
     merkle_tree = MerkleTree(data_to_hash, ["uint256", "address", "uint256"], 2)
@@ -92,13 +105,18 @@ def main():
     transfer_to_distributor(token, distributor, token_supply)
 
     # claim from the 1st account
-    index = 0
-    index, account, amount = data_to_hash[index]
-    target_node = merkle_tree.initial_nodes[data_to_hash[index]]
-    merkle_proof = merkle_tree.get_proof_hashes(target_node)
+    # index = 0
+    # index, account, amount = data_to_hash[index]
+    # target_node = merkle_tree.initial_nodes[data_to_hash[index]]
+    # merkle_proof = merkle_tree.get_proof_hashes(target_node)
     # is_in_a_tree = merkle_tree.verify(merkle_proof, merkle_root, target_node.value)
 
-    claim = claim_from_distributor(distributor, index, account, amount, merkle_proof)
+    #check claim for the account
+    # check_claim(distributor, index, account, amount, merkle_proof)
 
-    balance = token.balanceOf(distributor.address)
-    print(f"Balance of the distributor: {balance} {token.symbol()}\n")
+    # claim from distributor
+    # claim = claim_from_distributor(distributor, index, account, amount, merkle_proof)
+    # balance = token.balanceOf(distributor.address)
+    # print(f"Balance of the distributor: {balance} {token.symbol()}\n")
+
+    

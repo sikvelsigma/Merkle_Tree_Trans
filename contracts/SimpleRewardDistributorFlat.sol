@@ -154,4 +154,12 @@ contract SimpleRewardDistributor {
 
         emit Claimed(index, account, amount);
     }
+
+    function checkClaim(uint256 index, address account, uint256 amount, bytes32[] calldata merkleProof) external view returns (bool){
+        require(!isClaimed(index), 'MerkleDistributor: Drop already claimed.');
+
+        // Verify the merkle proof.
+        bytes32 node = keccak256(abi.encodePacked(index, account, amount));
+        return MerkleProof.verify(merkleProof, merkleRoot, node);
+    }
 }

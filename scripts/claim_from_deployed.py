@@ -9,11 +9,11 @@ from scripts.deploy import claim_from_distributor
 # unclaimed account (currently claimed 0-2 as of the time of this commit)
 claim_index = 3
 
-token_address = "0x97307156CC5Ec182044BA455b49772f255BbF548"
-distributor_address = "0xE13658969D27171016666ee57e17a2318f248b25"
+token_address = "0x7A8794A201FfCD45d51292471b9c0c5CF9A54485"
+distributor_address = "0x4002a62CC0faB1c46c15963703Aa9e5c32c6A2F5"
 
 def main():
-
+    """Claim from already deployed contracts"""
     token = Contract.from_explorer(token_address)
     distributor = Contract.from_explorer(distributor_address)
 
